@@ -4,7 +4,7 @@ from numpy import random
 from pandas import DataFrame, Series
 import os
 
-path = "..\\Files\\earthquake\\'
+path = "..\\Files\\earthquake\\"
 datafile_name = pd.Series(os.listdir(path))
 
 #Collating csv files
