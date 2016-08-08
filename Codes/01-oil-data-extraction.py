@@ -5,11 +5,11 @@ import numpy as np
 import zipfile as zf ,os
 import pandas as pd
 import rarfile as rf,unrar
-rf.UNRAR_TOOL='C:\\Program Files\\WinRAR\\rar.EXE'
+rf.UNRAR_TOOL='C:/Program Files/WinRAR/rar.EXE'
 
 
 #Location of raw data
-ziploc = '..\\Files\\oil-wells-raw-data'
+ziploc = '../Files/oil-wells-raw-data'
 list_of_files = pd.Series(os.listdir(ziploc))
 list_of_files = list_of_files[list_of_files.str.contains('.zip|.rar')]
 
@@ -31,22 +31,22 @@ well_header = pd.DataFrame( np.arange(45).reshape((1,45)), \
 well_header.astype(str)
 
 
-##Processing production summary and production data
+#Processing production summary and production data
 for a_file in list_of_files:
     if '.zip' in a_file:
-        a_zipfile = zf.ZipFile("{}\\{}".format(ziploc,a_file),'r')
+        a_zipfile = zf.ZipFile("{}/{}".format(ziploc,a_file),'r')
         contentlist = a_zipfile.namelist()
     else:
-        a_zipfile = rf.RarFile("{}\\{}".format(ziploc,a_file),'r')
+        a_zipfile = rf.RarFile("{}/{}".format(ziploc,a_file),'r')
         contentlist = a_zipfile.namelist()[:-1]
     for content_file in contentlist:
         with a_zipfile.open(content_file) as f:
             try:
                 if 'Summary' in content_file:
-                    prod_summ = prod_summ.append(pd.read_csv(f),ignore_index = False)
+                    prod_summ = prod_summ.append(pd.read_csv(f),ignore_index = True)
                 else:
                     if 'Head' not in content_file:
-                        prod = prod.append(pd.read_csv(f),ignore_index = False)
+                        prod = prod.append(pd.read_csv(f),ignore_index = True)
             except:
                 if 'Summary' in content_file:
                     prod_summ = pd.read_csv(f)
@@ -54,21 +54,19 @@ for a_file in list_of_files:
                     if 'Head' not in content_file:
                         prod = pd.read_csv(f)
 
-#prod_summ['WELLID'].tail(15)
-
 
 ##Processing well header data
 for a_file in list_of_files:
     if '.zip' in a_file:
-        a_zipfile = zf.ZipFile("{}\\{}".format(ziploc,a_file),'r')
+        a_zipfile = zf.ZipFile("{}/{}".format(ziploc,a_file),'r')
         contentlist = a_zipfile.namelist()
     else:
-        a_zipfile = rf.RarFile("{}\\{}".format(ziploc,a_file),'r')
+        a_zipfile = rf.RarFile("{}/{}".format(ziploc,a_file),'r')
         contentlist = a_zipfile.namelist()[:-1]
     for content_file in contentlist:
         if 'Head' in content_file:
             with a_zipfile.open(content_file) as f:
-                with open('..\\Files\\oil-wells-raw-data\\well_temp','w') as f2:
+                with open('../Files/oil-wells-raw-data/well_temp','w') as f2:
                     for line in f:
                         line = line.replace('","',"'|'")
                         line = list(line)
@@ -76,24 +74,20 @@ for a_file in list_of_files:
                         line = ''.join(line)
                         f2.write(line)
             well_header = well_header.append(\
-                        pd.read_csv('..\\Files\\oil-wells-raw-data\\well_temp',\
+                        pd.read_csv('../Files/oil-wells-raw-data/well_temp',\
                                     sep = '|',skiprows = [0], header = None,\
                                     names = well_columns,engine = 'python'),\
-                                    ignore_index= False)
+                                    ignore_index= True)
 
-print len(well_header.drop_duplicates())
-#print len(prod.drop_duplicates())
-print len(prod_summ.drop_duplicates())
 
-#exporting final data files
-well_header[well_header.WELLID != '0'].drop_duplicates()\
-        .to_csv('..\\Files\\processed-data\\well_header.csv',index = False,
+#Exporting after duplicates
+well_header.ix[1:]\
+           .applymap(lambda x: x.strip('\''))\
+           .drop_duplicates()\
+           .to_csv('../Files/processed-data/well_header.csv',index = False,
                 header= True)
 
-prod.drop_duplicates().to_csv('..\\Files\\processed-data\\prod.csv',\
+prod.drop_duplicates().to_csv('../Files/processed-data/prod.csv',\
                                 index = False,header= True)
-prod_summ.drop_duplicates().to_csv('..\\Files\\processed-data\\prod_summ.csv',\
+prod_summ.drop_duplicates().to_csv('../Files/processed-data/prod_summ.csv',\
                                 index = False,header= True)
-
-with zf.ZipFile('\\Files\\processed-data\\Final-data.zip','w') as zipf:
-    zipf.write('\\Files\\processed-data\\prod.csv')
