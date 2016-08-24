@@ -4,9 +4,11 @@
 import numpy as np
 import zipfile as zf ,os
 import pandas as pd
-import rarfile as rf,unrar
-rf.UNRAR_TOOL='C:/Program Files/WinRAR/rar.EXE'
+import rarfile as rf
 
+#Edit this to point to the rar.EXE location on your system
+#Search for winrar.exe on windows search and locate the .exe file present in the installation directory
+rf.UNRAR_TOOL='C:/Program Files/WinRAR/rar.EXE'
 
 #Location of raw data
 ziploc = '../Files/oil-wells-raw-data'

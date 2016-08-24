@@ -4,7 +4,7 @@ from numpy import random
 from pandas import DataFrame, Series
 import os
 
-path = "..\\Files\\earthquake\\"
+path = "../Files/earthquake/"
 datafile_name = pd.Series(os.listdir(path))
 
 #Collating csv files
@@ -15,4 +15,4 @@ for i in datafile_name:
     data = data.append(x)
 
 #exporting the collated file
-data.to_csv('..\\Files\\processed-data\\completeEarthquakeFreq.csv',head = True, index = False)
+data.to_csv('../Files/processed-data/completeEarthquakeFreq.csv',head = True, index = False)
